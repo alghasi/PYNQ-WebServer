@@ -70,3 +70,124 @@ function fetchData() {
     });
 }
 ```
+## Using JavaScript Timer
+```javascript
+setInterval(fetchData, 1500);
+```
+## Data Visualization with Chart.js
+Chart.js is a JavaScript library for creating responsive, interactive charts. Example function to add data:
+
+```javascript
+function addData(label, data1, data2) {
+  window.myChart2.data.labels.push(label);
+  window.myChart2.data.datasets[0].data.push(data1);
+  window.myChart2.data.datasets[1].data.push(data2);
+  window.myChart2.update();
+}
+```
+## Hardware and Vivado
+This project uses symbolic data for display. The XADC sensor reads processor temperature and core voltage. Key objectives:
+
+Using XADC directly without an IP core in PL.
+
+Demonstrating Linux drivers for XADC.
+
+Connecting Python to Linux drivers.
+
+XADC Driver in Linux
+Driver address: /sys/bus/iio/devices/iio:device0/
+
+Example reading temperature:
+
+```bash
+cat /sys/bus/iio/devices/iio:device0/in_temp0_raw
+Temperature calculation:
+t
+e
+m
+p
+e
+r
+a
+t
+u
+r
+e
+=
+R
+a
+w
+D
+a
+t
+a
+×
+503.975
+4096
+−
+273
+```
+temperature= 
+4096
+RawData×503.975
+​
+ −273
+
+## Web Server Sample Code for Backend
+Import Libraries
+```python
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
+import threading
+import json
+```
+Read Data from XADC Driver
+```python
+def read_xadc_temperature():
+    try:
+        with open("/sys/bus/iio/devices/iio:device0/in_temp0_raw", "r") as raw_file, \
+             open("/sys/bus/iio/devices/iio:device0/in_voltage0_vccint_scale", "r") as scale_file, \
+             open("/sys/bus/iio/devices/iio:device0/in_voltage0_vccint_raw", "r") as vcore_file:
+            raw = int(raw_file.read().strip())
+            scale = float(scale_file.read().strip())
+            core = int(vcore_file.read().strip())
+            temp = (raw * 503.975 / 4096) - 273
+            vcore = scale * core
+            return [temp, vcore]
+    except Exception as e:
+        print(f"Error reading XADC temperature: {e}")
+        return None
+```
+Override HTTP Handler
+```python
+class MyHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/posts/1':
+            posts = {
+                1: {
+                    "id": 1,
+                    "title": "temp",
+                    "val": read_xadc_temperature()
+                }
+            }
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            response = json.dumps(posts[1]).encode('utf-8')
+            self.wfile.write(response)
+        else:
+            super().do_GET()
+```
+## Run Server
+```python
+def run_server():
+    PORT = 8000
+    server_address = ('', PORT)
+    httpd = HTTPServer(server_address, MyHandler)
+    print(f"Serving on port {PORT}...")
+    httpd.serve_forever()
+
+server_thread = threading.Thread(target=run_server)
+server_thread.daemon = True
+server_thread.start()
+```

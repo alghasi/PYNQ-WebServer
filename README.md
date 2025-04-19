@@ -102,36 +102,11 @@ Example reading temperature:
 ```bash
 cat /sys/bus/iio/devices/iio:device0/in_temp0_raw
 Temperature calculation:
-t
-e
-m
-p
-e
-r
-a
-t
-u
-r
-e
-=
-R
-a
-w
-D
-a
-t
-a
-×
-503.975
-4096
-−
-273
+temperature=RawData×503.975/4096−273
 ```
 temperature= 
 4096
-RawData×503.975
-​
- −273
+RawData×503.975−273
 
 ## Web Server Sample Code for Backend
 Import Libraries
@@ -141,7 +116,7 @@ from urllib.parse import urlparse, parse_qs
 import threading
 import json
 ```
-Read Data from XADC Driver
+## Read Data from XADC Driver
 ```python
 def read_xadc_temperature():
     try:
@@ -158,7 +133,7 @@ def read_xadc_temperature():
         print(f"Error reading XADC temperature: {e}")
         return None
 ```
-Override HTTP Handler
+## Override HTTP Handler
 ```python
 class MyHandler(SimpleHTTPRequestHandler):
     def do_GET(self):

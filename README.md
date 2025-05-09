@@ -12,6 +12,11 @@
 - [XADC Driver in Linux](#xadc-driver-in-linux)
 - [Web Server Sample Code for Backend](#web-server-sample-code-for-backend)
 
+
+## Watch video of workshop on youtube
+[![Watch video of workshop on youtube](PYNQ3.jpg)](https://youtu.be/pFl-Db5gi-k)
+
+
 ## Introduction
 In this project, a web interface has been set up. To implement it, 3 main parts are needed:
 
